@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: js
+            os: ubuntu-latest
+            target: js
+          - name: native
+            os: ubuntu-latest
+            target: native
+    runs-on: ${{ matrix.os }}
+    env:
+      MOON_CC: clang
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit CLI
+        run: |
+          curl -fsSL -A "Mozilla/5.0" https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Update MoonBit registry
+        run: moon update
+      - name: Format
+        run: |
+          moon fmt
+          git diff --exit-code
+      - name: Check
+        run: moon check --target ${{ matrix.target }}
+      - name: Test
+        run: moon test --target ${{ matrix.target }}
+      - name: Info (verifies pkg.generated.mbti is in sync)
+        if: matrix.target == 'js'
+        run: |
+          moon info
+          git diff --exit-code src/pkg.generated.mbti
