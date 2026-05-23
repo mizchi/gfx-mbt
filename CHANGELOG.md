@@ -8,6 +8,61 @@ surface is still pre-1.0, **every minor bump may break compatibility**.
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING** — conversion / query helpers are now methods on the
+  associated type instead of free functions:
+
+  | Old (free fn) | New (method) |
+  |---|---|
+  | `blend_mode_to_int(m)` | `BlendMode::to_int(m)` / `m.to_int()` |
+  | `blend_mode_from_int(i)` | `BlendMode::from_int(i)` |
+  | `blend_mode_to_equation(m)` | `BlendMode::to_equation(m)` |
+  | `blend_factor_*` | `BlendFactor::to_int` / `from_int` |
+  | `blend_operation_*` | `BlendOperation::to_int` / `from_int` |
+  | `filter_mode_*` | `FilterMode::to_int` / `from_int` |
+  | `builtin_filter_*` | `BuiltinShaderFilter::to_int` / `from_int` |
+  | `builtin_address_*` | `BuiltinShaderAddress::to_int` / `from_int` |
+  | `builtin_key_to_ex(k)` | `BuiltinShaderKey::to_ex(k)` |
+  | `estimated_draw_call_count(c)` | `DrawTrianglesCommand::estimated_draw_call_count(c)` |
+  | `estimated_total_index_count(c)` | `DrawTrianglesCommand::estimated_total_index_count(c)` |
+  | `build_draw_command_dispatch(c)` | `DrawTrianglesCommand::build_dispatch(c)` |
+  | `dispatch_checksum(d)` | `DrawCommandDispatch::checksum(d)` |
+  | `pixel_diff_ratio(r)` | `PixelDiffResult::diff_ratio(r)` |
+  | `compare_framebuffer_snapshots(a, b, t)` | `FramebufferSnapshot::compare_with(a, b, t)` |
+  | `graphics_resize_stats(d)` | `StubGraphicsDriver::resize_stats(d)` |
+  | `builtin_shader_cache_stats(r)` | `BasicBuiltinShaderSourceRepo::cache_stats(r)` |
+  | `builtin_shader_source_cache_size(r)` | `BasicBuiltinShaderSourceRepo::cache_size(r)` |
+  | `builtin_shader_source_cache_limit(r)` | `BasicBuiltinShaderSourceRepo::cache_limit(r)` |
+  | `clear_builtin_shader_source_cache(r)` | `BasicBuiltinShaderSourceRepo::clear_cache(r)` |
+  | `validate_uniform_layout(l)` | `UniformLayout::validate(l)` |
+  | `validate_shader_compile_request(r)` | `ShaderCompileRequest::validate(r)` |
+  | `validate_preserved_uniform_context(c)` | `PreservedUniformContext::validate(c)` |
+  | `compute_expected_preserved_dwords(c)` | `PreservedUniformContext::expected_dwords(c)` |
+  | `shader_unit_eq(a, b)` | `ShaderUnit::eq(a, b)` / `a.eq(b)` |
+  | `shader_hash_eq(a, b)` | `ShaderSourceHash::eq(a, b)` / `a.eq(b)` |
+
+  Migration is a mechanical rename; each helper is callable either as
+  a static method (`Type::method(value, ...)`) or as an instance method
+  (`value.method(...)`).
+
+- Removed `compile_shader_ir` and `calc_shader_source_hash` free
+  functions; call `frontend.compile_ir(request)` and
+  `frontend.calc_source_hash(request)` directly via the `ShaderFrontend`
+  trait. `build_canonical_uniforms` is kept because it composes three
+  trait methods and a private normalization step.
+
+### Added
+
+- `FramebufferSnapshot::from_pixels(x, y, w, h, pixels)` constructor
+  for wrapping an externally-captured RGBA8 buffer (golden fixture,
+  manual decode, etc.) without going through a `GraphicsDriver`.
+- 7 blackbox tests in `src/public_api_test.mbt` exercising the public
+  surface as a downstream consumer would see it (null-driver round
+  trip, BlendMode int round-trip, build_dispatch / checksum,
+  FramebufferSnapshot diff, validation errors, ShaderFrontend hash
+  stability). Total tests now 116/116.
+
 ## [0.1.0] — initial extraction
 
 Extracted from `mizchi/kagura` at the point it was `modules/kagura_engine/src/gfx/`.

@@ -68,9 +68,14 @@ test "draw two triangles into a null driver" {
     [],       // no uniforms
   )
 
-  // 4. Enqueue and flush through the driver. The default vertex budget
-  //    will keep these two triangles in a single backend draw call.
+  // 4. Inspect the command summary (useful for batching / debug).
+  let dispatch = command.build_dispatch()
+  let _ = dispatch.checksum()  // stable Int fingerprint
+
+  // 5. Enqueue and flush through the driver. Two identical commands
+  //    will be merged by SimpleCommandQueue into one backend draw.
   let queue = @gfx.new_simple_command_queue()
+  queue.enqueue_draw_triangles(command)
   queue.enqueue_draw_triangles(command)
   @gfx.flush_commands(driver, queue, false)
 }
@@ -78,6 +83,10 @@ test "draw two triangles into a null driver" {
 
 Take the same command, swap the driver for a WebGPU or wgpu-native
 impl, and nothing else changes.
+
+The conversion helpers are also exposed as methods on each type:
+`BlendMode::Alpha.to_int()`, `BlendMode::from_int(1)`, `command.build_dispatch()`,
+`dispatch.checksum()`, `result.diff_ratio()`, `request.validate()`, etc.
 
 ## Implementing a backend
 
