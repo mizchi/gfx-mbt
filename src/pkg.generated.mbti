@@ -547,4 +547,3 @@ pub(open) trait UniformCanonicalizer {
   fn prepend_preserved_uniforms(Self, PackedUniforms, PreservedUniformContext) -> PackedUniforms
   fn filter_unused_uniforms(Self, ShaderIR, UniformLayout, PackedUniforms) -> PackedUniforms
 }
-

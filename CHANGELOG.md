@@ -8,6 +8,8 @@ surface is still pre-1.0, **every minor bump may break compatibility**.
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-09-18
+
 ### Changed
 
 - **BREAKING** — conversion / query helpers are now methods on the
@@ -62,6 +64,16 @@ surface is still pre-1.0, **every minor bump may break compatibility**.
   trip, BlendMode int round-trip, build_dispatch / checksum,
   FramebufferSnapshot diff, validation errors, ShaderFrontend hash
   stability). Total tests now 116/116.
+
+### Performance
+
+- Command-buffer hot paths:
+  - `DrawTrianglesCommand::build_dispatch` now walks `dst_regions` once
+    instead of up to three times (~6% faster on native).
+  - `SimpleCommandQueue` merging of explicit-payload commands is two
+    passes with pre-sized buffers instead of three.
+  - `FramebufferSnapshot::compare_with` hoists the per-pixel bounds
+    check out of the loop (~4% faster on native).
 
 ## [0.1.0] — initial extraction
 
