@@ -4,6 +4,8 @@ version = "0.1.1"
 
 description = "Backend-agnostic GPU command buffer and driver contracts (extracted from kagura)"
 
+readme = "README.md"
+
 repository = "https://github.com/mizchi/gfx-mbt"
 
 license = "Apache-2.0"
