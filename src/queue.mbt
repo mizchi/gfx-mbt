@@ -119,8 +119,9 @@ fn can_merge_draw_triangles(
   }
   let lhs_explicit = lhs.vertex_data.length() > 0 || lhs.indices.length() > 0
   let rhs_explicit = rhs.vertex_data.length() > 0 || rhs.indices.length() > 0
+  // The vertex budget is intentionally NOT checked here: the flush loop
+  // enforces it cumulatively via `can_merge_draw_triangles_with_vertex_budget`.
   lhs_explicit == rhs_explicit &&
-  lhs.vertex_data.length() + rhs.vertex_data.length() <= max_merge_vertex_floats &&
   lhs.dst.id == rhs.dst.id &&
   lhs.shader.id == rhs.shader.id &&
   blend_mode_eq(lhs.blend, rhs.blend) &&
@@ -149,15 +150,16 @@ fn merge_draw_triangles_range(
 ) -> DrawTrianglesCommand {
   let base = commands[start]
   let explicit = base.vertex_data.length() > 0 || base.indices.length() > 0
-  let merged_regions : Array[DstRegion] = []
-  for i in start..<end {
-    let command = commands[i]
-    for region in command.dst_regions {
-      merged_regions.push(region)
-    }
-  }
   if !explicit {
-    {
+    // Cached-geometry merge: only the regions grow, so a single push
+    // pass is the cheapest shape.
+    let merged_regions : Array[DstRegion] = []
+    for i in start..<end {
+      for region in commands[i].dst_regions {
+        merged_regions.push(region)
+      }
+    }
+    return {
       dst: base.dst,
       shader: base.shader,
       dst_regions: merged_regions,
@@ -173,49 +175,59 @@ fn merge_draw_triangles_range(
       resource_cache_key: base.resource_cache_key,
       vertex_stride_hint: base.vertex_stride_hint,
     }
-  } else {
-    let mut merged_vertex_float_count = 0
-    let mut merged_index_count = 0
-    for i in start..<end {
-      merged_vertex_float_count = merged_vertex_float_count +
-        commands[i].vertex_data.length()
-      merged_index_count = merged_index_count + commands[i].indices.length()
+  }
+  // Explicit payload merge: one counting pass sizes every output array
+  // up front (regions, floats, indices), then one fill pass writes into
+  // the pre-allocated buffers — two passes total instead of three.
+  let mut region_count = 0
+  let mut vertex_count = 0
+  let mut index_count = 0
+  for i in start..<end {
+    let command = commands[i]
+    region_count = region_count + command.dst_regions.length()
+    vertex_count = vertex_count + command.vertex_data.length()
+    index_count = index_count + command.indices.length()
+  }
+  let merged_regions : Array[DstRegion] = Array::make(
+    region_count, { x: 0, y: 0, width: 0, height: 0, index_count: 0 },
+  )
+  let merged_vertex_data : Array[Double] = Array::make(vertex_count, 0.0)
+  let merged_indices : Array[Int] = Array::make(index_count, 0)
+  let mut region_offset = 0
+  let mut vertex_offset = 0
+  let mut index_offset = 0
+  let mut vertex_base = 0
+  for i in start..<end {
+    let command = commands[i]
+    for region in command.dst_regions {
+      merged_regions[region_offset] = region
+      region_offset = region_offset + 1
     }
-    let merged_vertex_data : Array[Double] = Array::make(
-      merged_vertex_float_count, 0.0,
-    )
-    let merged_indices : Array[Int] = Array::make(merged_index_count, 0)
-    let mut vertex_offset = 0
-    let mut index_offset = 0
-    let mut vertex_base = 0
-    for i in start..<end {
-      let command = commands[i]
-      for v in command.vertex_data {
-        merged_vertex_data[vertex_offset] = v
-        vertex_offset = vertex_offset + 1
-      }
-      for idx in command.indices {
-        merged_indices[index_offset] = idx + vertex_base
-        index_offset = index_offset + 1
-      }
-      vertex_base = vertex_base + command.vertex_data.length() / vertex_stride
+    for v in command.vertex_data {
+      merged_vertex_data[vertex_offset] = v
+      vertex_offset = vertex_offset + 1
     }
-    {
-      dst: base.dst,
-      shader: base.shader,
-      dst_regions: merged_regions,
-      index_offset: base.index_offset,
-      pipeline_id: base.pipeline_id,
-      uniform_hash: base.uniform_hash,
-      blend: base.blend,
-      vertex_data: merged_vertex_data,
-      indices: merged_indices,
-      src_image_ids: base.src_image_ids,
-      uniform_dwords: base.uniform_dwords,
-      instance_count: base.instance_count,
-      resource_cache_key: base.resource_cache_key,
-      vertex_stride_hint: base.vertex_stride_hint,
+    for idx in command.indices {
+      merged_indices[index_offset] = idx + vertex_base
+      index_offset = index_offset + 1
     }
+    vertex_base = vertex_base + command.vertex_data.length() / vertex_stride
+  }
+  {
+    dst: base.dst,
+    shader: base.shader,
+    dst_regions: merged_regions,
+    index_offset: base.index_offset,
+    pipeline_id: base.pipeline_id,
+    uniform_hash: base.uniform_hash,
+    blend: base.blend,
+    vertex_data: merged_vertex_data,
+    indices: merged_indices,
+    src_image_ids: base.src_image_ids,
+    uniform_dwords: base.uniform_dwords,
+    instance_count: base.instance_count,
+    resource_cache_key: base.resource_cache_key,
+    vertex_stride_hint: base.vertex_stride_hint,
   }
 }
 

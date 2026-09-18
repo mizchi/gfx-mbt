@@ -138,22 +138,26 @@ pub fn FramebufferSnapshot::compare_with(
     return { total_pixels: total, diff_pixels: total, max_channel_diff: 255 }
   }
   let pixel_count = self.width * self.height
+  // Walk only the whole pixels present in both buffers; the per-pixel
+  // bounds check is hoisted into a single loop limit.
+  let limit = @cmp.minimum(
+    @cmp.minimum(self.pixels.length(), other.pixels.length()) / 4,
+    pixel_count,
+  )
   let mut diff_pixels = 0
   let mut max_diff = 0
-  for i = 0; i < pixel_count; i = i + 1 {
+  for i = 0; i < limit; i = i + 1 {
     let base = i * 4
-    if base + 3 < self.pixels.length() && base + 3 < other.pixels.length() {
-      let dr = abs_int(self.pixels[base] - other.pixels[base])
-      let dg = abs_int(self.pixels[base + 1] - other.pixels[base + 1])
-      let db = abs_int(self.pixels[base + 2] - other.pixels[base + 2])
-      let da = abs_int(self.pixels[base + 3] - other.pixels[base + 3])
-      let channel_max = @cmp.maximum(@cmp.maximum(dr, dg), @cmp.maximum(db, da))
-      if channel_max > max_diff {
-        max_diff = channel_max
-      }
-      if channel_max > threshold {
-        diff_pixels = diff_pixels + 1
-      }
+    let dr = abs_int(self.pixels[base] - other.pixels[base])
+    let dg = abs_int(self.pixels[base + 1] - other.pixels[base + 1])
+    let db = abs_int(self.pixels[base + 2] - other.pixels[base + 2])
+    let da = abs_int(self.pixels[base + 3] - other.pixels[base + 3])
+    let channel_max = @cmp.maximum(@cmp.maximum(dr, dg), @cmp.maximum(db, da))
+    if channel_max > max_diff {
+      max_diff = channel_max
+    }
+    if channel_max > threshold {
+      diff_pixels = diff_pixels + 1
     }
   }
   { total_pixels: pixel_count, diff_pixels, max_channel_diff: max_diff }

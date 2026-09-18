@@ -215,36 +215,35 @@ pub impl Show for DrawCommandDispatch with fn output(self, logger) {
 }
 
 ///|
-fn normalized_region_triangle_count(region : DstRegion) -> Int {
-  if region.index_count <= 0 {
-    1
-  } else {
-    let triangles = region.index_count / 3
-    if triangles <= 0 {
-      1
+/// One-pass summary of a region list: returns (estimated draw calls,
+/// total index count) so callers that need both values walk the list
+/// once instead of once per metric.
+fn summarize_regions(regions : Array[DstRegion]) -> (Int, Int) {
+  let mut draw_calls = 0
+  let mut index_total = 0
+  for region in regions {
+    let region_index_count = region.index_count
+    if region_index_count <= 0 {
+      draw_calls = draw_calls + 1
+      index_total = index_total + 3
     } else {
-      triangles
+      let triangles = region_index_count / 3
+      if triangles <= 0 {
+        draw_calls = draw_calls + 1
+      } else {
+        draw_calls = draw_calls + triangles
+      }
+      index_total = index_total + region_index_count
     }
   }
-}
-
-///|
-fn normalized_region_index_count(region : DstRegion) -> Int {
-  if region.index_count <= 0 {
-    3
-  } else {
-    region.index_count
-  }
+  (draw_calls, index_total)
 }
 
 ///|
 pub fn DrawTrianglesCommand::estimated_draw_call_count(
   self : DrawTrianglesCommand,
 ) -> Int {
-  let mut draw_calls = 0
-  for region in self.dst_regions {
-    draw_calls = draw_calls + normalized_region_triangle_count(region)
-  }
+  let (draw_calls, _) = summarize_regions(self.dst_regions)
   draw_calls
 }
 
@@ -252,21 +251,8 @@ pub fn DrawTrianglesCommand::estimated_draw_call_count(
 pub fn DrawTrianglesCommand::estimated_total_index_count(
   self : DrawTrianglesCommand,
 ) -> Int {
-  let mut total = 0
-  for region in self.dst_regions {
-    total = total + normalized_region_index_count(region)
-  }
-  total
-}
-
-///|
-fn resolved_index_count(command : DrawTrianglesCommand) -> Int {
-  let explicit = command.indices.length()
-  if explicit > 0 {
-    explicit
-  } else {
-    command.estimated_total_index_count()
-  }
+  let (_, index_total) = summarize_regions(self.dst_regions)
+  index_total
 }
 
 ///|
@@ -275,8 +261,11 @@ fn resolved_index_count(command : DrawTrianglesCommand) -> Int {
 pub fn DrawTrianglesCommand::build_dispatch(
   self : DrawTrianglesCommand,
 ) -> DrawCommandDispatch {
+  let (draw_calls, total_index_count) = summarize_regions(self.dst_regions)
+  // Explicit index payload wins; otherwise fall back to the region total.
+  let explicit_indices = self.indices.length()
   {
-    draw_calls: self.estimated_draw_call_count(),
+    draw_calls,
     pipeline_id: self.pipeline_id,
     uniform_hash: self.uniform_hash,
     blend_mode: self.blend.to_int(),
@@ -284,9 +273,13 @@ pub fn DrawTrianglesCommand::build_dispatch(
     shader_id: self.shader.id,
     index_offset: self.index_offset,
     region_count: self.dst_regions.length(),
-    total_index_count: self.estimated_total_index_count(),
+    total_index_count,
     vertex_float_count: self.vertex_data.length(),
-    index_count: resolved_index_count(self),
+    index_count: if explicit_indices > 0 {
+      explicit_indices
+    } else {
+      total_index_count
+    },
     src_image_count: self.src_image_ids.length(),
     uniform_dword_count: self.uniform_dwords.length(),
   }
