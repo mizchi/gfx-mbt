@@ -94,7 +94,7 @@ pub fn FramebufferSnapshot::from_pixels(
   height : Int,
   pixels : Array[Int],
 ) -> FramebufferSnapshot {
-  { x, y, width, height, pixels }
+  { x, y, width, height, pixels, }
 }
 
 ///|
@@ -135,7 +135,7 @@ pub fn FramebufferSnapshot::compare_with(
 ) -> PixelDiffResult {
   let total = self.width * self.height
   if self.width != other.width || self.height != other.height {
-    return { total_pixels: total, diff_pixels: total, max_channel_diff: 255 }
+    return { total_pixels: total, diff_pixels: total, max_channel_diff: 255, }
   }
   let pixel_count = self.width * self.height
   // Walk only the whole pixels present in both buffers; the per-pixel
@@ -160,7 +160,7 @@ pub fn FramebufferSnapshot::compare_with(
       diff_pixels = diff_pixels + 1
     }
   }
-  { total_pixels: pixel_count, diff_pixels, max_channel_diff: max_diff }
+  { total_pixels: pixel_count, diff_pixels, max_channel_diff: max_diff, }
 }
 
 ///|

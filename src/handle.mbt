@@ -63,7 +63,7 @@ pub impl Show for ImageHandle with fn output(self, logger) {
 /// that allocated `id`; ordinary callers get handles from
 /// `GraphicsDriver.new_image`.
 pub fn new_image_handle(id : Int, width : Int, height : Int) -> ImageHandle {
-  { id, width, height }
+  { id, width, height, }
 }
 
 ///|
@@ -83,7 +83,7 @@ pub impl Show for ShaderHandle with fn output(self, logger) {
 ///|
 /// Wrap a backend-assigned shader id together with its compiled source.
 pub fn new_shader_handle(id : Int, source : String) -> ShaderHandle {
-  { id, source }
+  { id, source, }
 }
 
 ///|

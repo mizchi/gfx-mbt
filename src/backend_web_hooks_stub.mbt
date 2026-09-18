@@ -35,7 +35,7 @@ pub fn new_web_graphics_hooks_full(
   on_resize : (Bool, GraphicsBackendKind, Int, Int) -> Unit,
   on_read_pixels : (Bool, GraphicsBackendKind, Int, Int, Int, Int) -> Array[Int]?,
 ) -> WebGraphicsHooks {
-  { try_initialize, on_begin, on_end, on_draw, on_resize, on_read_pixels }
+  { try_initialize, on_begin, on_end, on_draw, on_resize, on_read_pixels, }
 }
 
 ///|

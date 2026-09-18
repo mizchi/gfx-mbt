@@ -94,7 +94,7 @@ pub(open) trait GraphicsBackendFactory {
 
 ///|
 pub fn default_graphics_backend_options() -> GraphicsBackendOptions {
-  { enable_validation: true, prefer_low_power: false, enable_vsync: true }
+  { enable_validation: true, prefer_low_power: false, enable_vsync: true, }
 }
 
 ///|
@@ -312,13 +312,13 @@ pub impl GraphicsDriver for StubGraphicsDriver with fn new_image(
 ) {
   self.next_id = self.next_id + 1
   native_on_new_image(self.native_active, self.next_id, width, height)
-  { id: self.next_id, width, height }
+  { id: self.next_id, width, height, }
 }
 
 ///|
 pub impl GraphicsDriver for StubGraphicsDriver with fn new_shader(self, source) {
   self.next_id = self.next_id + 1
-  { id: self.next_id, source }
+  { id: self.next_id, source, }
 }
 
 ///|

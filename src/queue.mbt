@@ -188,9 +188,13 @@ fn merge_draw_triangles_range(
     vertex_count = vertex_count + command.vertex_data.length()
     index_count = index_count + command.indices.length()
   }
-  let merged_regions : Array[DstRegion] = Array::make(
-    region_count, { x: 0, y: 0, width: 0, height: 0, index_count: 0 },
-  )
+  let merged_regions : Array[DstRegion] = Array::make(region_count, {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    index_count: 0,
+  })
   let merged_vertex_data : Array[Double] = Array::make(vertex_count, 0.0)
   let merged_indices : Array[Int] = Array::make(index_count, 0)
   let mut region_offset = 0
@@ -275,7 +279,7 @@ pub impl CommandQueue for SimpleCommandQueue with fn flush(self) {
 
 ///|
 pub fn new_simple_command_queue() -> SimpleCommandQueue {
-  { commands: [] }
+  { commands: [], }
 }
 
 ///|
@@ -291,9 +295,9 @@ pub fn[T : GraphicsDriver, Q : CommandQueue] flush_commands(
   } else {
     let color = match clear_color {
       Some(c) => c
-      None => { r: 0.0, g: 0.0, b: 0.0, a: 1.0 }
+      None => { r: 0.0, g: 0.0, b: 0.0, a: 1.0, }
     }
-    driver.begin({ clear_color: color, clear_enabled: true, present })
+    driver.begin({ clear_color: color, clear_enabled: true, present, })
     for command in commands {
       driver.draw_triangles(command)
     }
@@ -306,6 +310,6 @@ pub fn[T : GraphicsDriver] clear_screen(
   driver : T,
   color : Color,
 ) -> Unit raise {
-  driver.begin({ clear_color: color, clear_enabled: true, present: false })
+  driver.begin({ clear_color: color, clear_enabled: true, present: false, })
   driver.end(false)
 }

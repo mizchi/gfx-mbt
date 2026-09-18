@@ -168,9 +168,9 @@ fn queue_test_command(
   region_x : Int,
 ) -> DrawTrianglesCommand {
   {
-    dst: { id: dst_id, width: 64, height: 64 },
-    shader: { id: shader_id, source: "shader-\{shader_id}" },
-    dst_regions: [{ x: region_x, y: 0, width: 32, height: 32, index_count: 3 }],
+    dst: { id: dst_id, width: 64, height: 64, },
+    shader: { id: shader_id, source: "shader-\{shader_id}", },
+    dst_regions: [{ x: region_x, y: 0, width: 32, height: 32, index_count: 3, }],
     index_offset,
     pipeline_id,
     uniform_hash,
@@ -197,9 +197,9 @@ fn queue_test_command_with_source_ids(
   src_image_ids : Array[Int],
 ) -> DrawTrianglesCommand {
   {
-    dst: { id: dst_id, width: 64, height: 64 },
-    shader: { id: shader_id, source: "shader-\{shader_id}" },
-    dst_regions: [{ x: region_x, y: 0, width: 32, height: 32, index_count: 3 }],
+    dst: { id: dst_id, width: 64, height: 64, },
+    shader: { id: shader_id, source: "shader-\{shader_id}", },
+    dst_regions: [{ x: region_x, y: 0, width: 32, height: 32, index_count: 3, }],
     index_offset,
     pipeline_id,
     uniform_hash,
@@ -227,9 +227,9 @@ fn queue_test_command_with_sources_and_uniforms(
   uniform_dwords : Array[Int],
 ) -> DrawTrianglesCommand {
   {
-    dst: { id: dst_id, width: 64, height: 64 },
-    shader: { id: shader_id, source: "shader-\{shader_id}" },
-    dst_regions: [{ x: region_x, y: 0, width: 32, height: 32, index_count: 3 }],
+    dst: { id: dst_id, width: 64, height: 64, },
+    shader: { id: shader_id, source: "shader-\{shader_id}", },
+    dst_regions: [{ x: region_x, y: 0, width: 32, height: 32, index_count: 3, }],
     index_offset,
     pipeline_id,
     uniform_hash,
@@ -282,7 +282,7 @@ test "native graphics hooks can be overridden and reset" {
   let command : DrawTrianglesCommand = {
     dst,
     shader,
-    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3 }],
+    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 1,
@@ -329,7 +329,7 @@ test "native graphics hooks can be overridden and reset" {
   driver2.draw_triangles({
     dst: dst2,
     shader: shader2,
-    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3 }],
+    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 1,
@@ -383,7 +383,7 @@ test "web graphics hooks can be overridden and reset" {
   let command : DrawTrianglesCommand = {
     dst,
     shader,
-    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3 }],
+    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 1,
@@ -430,7 +430,7 @@ test "web graphics hooks can be overridden and reset" {
   driver2.draw_triangles({
     dst: dst2,
     shader: shader2,
-    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3 }],
+    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 1,
@@ -466,7 +466,7 @@ test "command queue flush calls driver draw" {
   queue.enqueue_draw_triangles({
     dst,
     shader,
-    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3 }],
+    dst_regions: [{ x: 0, y: 0, width: 64, height: 64, index_count: 3, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 1,
@@ -666,14 +666,14 @@ test "command queue does not merge when uniform dwords differ" {
 ///|
 test "estimated_draw_call_count uses region index_count as triangle budget" {
   let command : DrawTrianglesCommand = {
-    dst: { id: 1, width: 64, height: 64 },
-    shader: { id: 1, source: "shader-1" },
+    dst: { id: 1, width: 64, height: 64, },
+    shader: { id: 1, source: "shader-1", },
     dst_regions: [
-      { x: 0, y: 0, width: 32, height: 32, index_count: 6 },
-      { x: 32, y: 0, width: 32, height: 32, index_count: 3 },
-      { x: 0, y: 32, width: 32, height: 32, index_count: 4 },
-      { x: 32, y: 32, width: 32, height: 32, index_count: 0 },
-      { x: 0, y: 64, width: 32, height: 32, index_count: -1 },
+      { x: 0, y: 0, width: 32, height: 32, index_count: 6, },
+      { x: 32, y: 0, width: 32, height: 32, index_count: 3, },
+      { x: 0, y: 32, width: 32, height: 32, index_count: 4, },
+      { x: 32, y: 32, width: 32, height: 32, index_count: 0, },
+      { x: 0, y: 64, width: 32, height: 32, index_count: -1, },
     ],
     index_offset: 0,
     pipeline_id: 1,
@@ -694,8 +694,8 @@ test "estimated_draw_call_count uses region index_count as triangle budget" {
 ///|
 test "estimated_draw_call_count is zero for empty regions" {
   let command : DrawTrianglesCommand = {
-    dst: { id: 1, width: 64, height: 64 },
-    shader: { id: 1, source: "shader-1" },
+    dst: { id: 1, width: 64, height: 64, },
+    shader: { id: 1, source: "shader-1", },
     dst_regions: [],
     index_offset: 0,
     pipeline_id: 1,
@@ -744,11 +744,11 @@ test "filter mode int conversion roundtrip" {
 ///|
 test "draw command dispatch captures backend boundary payload" {
   let command : DrawTrianglesCommand = {
-    dst: { id: 10, width: 64, height: 64 },
-    shader: { id: 20, source: "shader-20" },
+    dst: { id: 10, width: 64, height: 64, },
+    shader: { id: 20, source: "shader-20", },
     dst_regions: [
-      { x: 0, y: 0, width: 32, height: 32, index_count: 6 },
-      { x: 32, y: 0, width: 32, height: 32, index_count: 3 },
+      { x: 0, y: 0, width: 32, height: 32, index_count: 6, },
+      { x: 32, y: 0, width: 32, height: 32, index_count: 3, },
     ],
     index_offset: 0,
     pipeline_id: 7,
@@ -785,11 +785,11 @@ test "draw command dispatch captures backend boundary payload" {
 ///|
 test "draw command dispatch falls back index count to region totals" {
   let command : DrawTrianglesCommand = {
-    dst: { id: 1, width: 64, height: 64 },
-    shader: { id: 2, source: "shader-2" },
+    dst: { id: 1, width: 64, height: 64, },
+    shader: { id: 2, source: "shader-2", },
     dst_regions: [
-      { x: 0, y: 0, width: 32, height: 32, index_count: 6 },
-      { x: 32, y: 0, width: 32, height: 32, index_count: 3 },
+      { x: 0, y: 0, width: 32, height: 32, index_count: 6, },
+      { x: 32, y: 0, width: 32, height: 32, index_count: 3, },
     ],
     index_offset: 0,
     pipeline_id: 3,
@@ -989,9 +989,9 @@ test "command queue does not merge when custom blend differs" {
     op_alpha: BlendOperation::Add,
   }
   let base : DrawTrianglesCommand = {
-    dst: { id: 1, width: 10, height: 10 },
-    shader: { id: 1, source: "s" },
-    dst_regions: [{ x: 0, y: 0, width: 10, height: 10, index_count: 3 }],
+    dst: { id: 1, width: 10, height: 10, },
+    shader: { id: 1, source: "s", },
+    dst_regions: [{ x: 0, y: 0, width: 10, height: 10, index_count: 3, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 0,
@@ -1005,7 +1005,7 @@ test "command queue does not merge when custom blend differs" {
     vertex_stride_hint: 0,
   }
   queue.enqueue_draw_triangles(base)
-  queue.enqueue_draw_triangles({ ..base, blend: BlendMode::Custom(eq2) })
+  queue.enqueue_draw_triangles({ ..base, blend: BlendMode::Custom(eq2), })
   let flushed = queue.flush()
   assert_eq(flushed.length(), 2)
 }
@@ -1231,9 +1231,9 @@ fn queue_test_quad_command(
   src_image_ids : Array[Int],
 ) -> DrawTrianglesCommand {
   {
-    dst: { id: dst_id, width: 64, height: 64 },
-    shader: { id: shader_id, source: "shader-\{shader_id}" },
-    dst_regions: [{ x: 0, y: 0, width: 32, height: 32, index_count: 6 }],
+    dst: { id: dst_id, width: 64, height: 64, },
+    shader: { id: shader_id, source: "shader-\{shader_id}", },
+    dst_regions: [{ x: 0, y: 0, width: 32, height: 32, index_count: 6, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 0,
@@ -1327,9 +1327,9 @@ test "command queue does not merge explicit geometry exceeding budget" {
     big_vertex_data.push(0.0)
   }
   let cmd1 : DrawTrianglesCommand = {
-    dst: { id: 1, width: 64, height: 64 },
-    shader: { id: 1, source: "shader-1" },
-    dst_regions: [{ x: 0, y: 0, width: 32, height: 32, index_count: 6 }],
+    dst: { id: 1, width: 64, height: 64, },
+    shader: { id: 1, source: "shader-1", },
+    dst_regions: [{ x: 0, y: 0, width: 32, height: 32, index_count: 6, }],
     index_offset: 0,
     pipeline_id: 1,
     uniform_hash: 0,
@@ -1509,7 +1509,7 @@ test "create_framebuffer_snapshot returns None when not initialized" {
 ///|
 test "compare_framebuffer_snapshots identical pixels" {
   let pixels : Array[Int] = [255, 0, 0, 255, 0, 255, 0, 255]
-  let a : FramebufferSnapshot = { x: 0, y: 0, width: 2, height: 1, pixels }
+  let a : FramebufferSnapshot = { x: 0, y: 0, width: 2, height: 1, pixels, }
   let b : FramebufferSnapshot = {
     x: 0,
     y: 0,

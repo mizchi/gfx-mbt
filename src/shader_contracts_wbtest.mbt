@@ -13,7 +13,7 @@ test "basic shader frontend compiles and hashes source" {
     source: "@fragment fn main() -> vec4f { return vec4f(1.0); }",
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count: 1,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "smoke",
   }
   let ir = frontend.compile_ir(request)
@@ -30,20 +30,20 @@ test "basic canonicalizer packs and prepends uniforms" {
     unit: ShaderUnit::Pixels,
     noperspective: false,
     src_image_count: 1,
-    entrypoints: { vertex: "v", fragment: "f" },
+    entrypoints: { vertex: "v", fragment: "f", },
     debug_name: "x",
-    source_hash: { value: "1" },
+    source_hash: { value: "1", },
   }
   let packed = build_canonical_uniforms(
     canonicalizer,
-    { names: ["u_a", "u_b"], dword_counts: [1, 2], preserved_prefix_dwords: 0 },
+    { names: ["u_a", "u_b"], dword_counts: [1, 2], preserved_prefix_dwords: 0, },
     [
-      { name: "u_a", value: UniformValue::Int(7) },
-      { name: "u_b", value: UniformValue::Floats([1.0, 2.0]) },
+      { name: "u_a", value: UniformValue::Int(7), },
+      { name: "u_b", value: UniformValue::Floats([1.0, 2.0]), },
     ],
     {
-      dst_texture_size: { width: 320, height: 240 },
-      dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0 },
+      dst_texture_size: { width: 320, height: 240, },
+      dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0, },
       src_texture_sizes: [],
       src_regions: [],
     },
@@ -65,14 +65,14 @@ test "hash includes entrypoints and unit to avoid collisions" {
     source,
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count,
-    entrypoints: { vertex: "vs_a", fragment: "fs_a" },
+    entrypoints: { vertex: "vs_a", fragment: "fs_a", },
     debug_name,
   }
   let request_b : ShaderCompileRequest = {
     source,
     unit_hint: Some(ShaderUnit::Texels),
     src_image_count,
-    entrypoints: { vertex: "vs_b", fragment: "fs_b" },
+    entrypoints: { vertex: "vs_b", fragment: "fs_b", },
     debug_name,
   }
   let hash_a = frontend.calc_source_hash(request_a)
@@ -88,14 +88,14 @@ test "kage unit directive overrides unit hint and stabilizes hash" {
     source,
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "kage_unit",
   }
   let request_texels_hint : ShaderCompileRequest = {
     source,
     unit_hint: Some(ShaderUnit::Texels),
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "kage_unit",
   }
   let ir = frontend.compile_ir(request_pixels_hint)
@@ -114,14 +114,14 @@ test "invalid kage unit directive falls back to hint and default" {
     source,
     unit_hint: Some(ShaderUnit::Texels),
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "kage_invalid_hint",
   }
   let request_default : ShaderCompileRequest = {
     source,
     unit_hint: None,
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "kage_invalid_default",
   }
   let ir_with_hint = frontend.compile_ir(request_with_hint)
@@ -137,7 +137,7 @@ test "compile_ir preprocesses source with runtime metadata header" {
     source: "@fragment fn main() -> vec4f { return vec4f(1.0); }",
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "preprocess",
   }
   let ir = frontend.compile_ir(request)
@@ -152,20 +152,20 @@ test "canonical uniforms length follows uniform layout contract" {
     unit: ShaderUnit::Pixels,
     noperspective: false,
     src_image_count: 1,
-    entrypoints: { vertex: "v", fragment: "f" },
+    entrypoints: { vertex: "v", fragment: "f", },
     debug_name: "x",
-    source_hash: { value: "1" },
+    source_hash: { value: "1", },
   }
   let packed = build_canonical_uniforms(
     canonicalizer,
-    { names: ["u_a", "u_b"], dword_counts: [1, 2], preserved_prefix_dwords: 2 },
+    { names: ["u_a", "u_b"], dword_counts: [1, 2], preserved_prefix_dwords: 2, },
     [
-      { name: "u_a", value: UniformValue::Int(7) },
-      { name: "u_b", value: UniformValue::Floats([1.0, 2.0]) },
+      { name: "u_a", value: UniformValue::Int(7), },
+      { name: "u_b", value: UniformValue::Floats([1.0, 2.0]), },
     ],
     {
-      dst_texture_size: { width: 320, height: 240 },
-      dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0 },
+      dst_texture_size: { width: 320, height: 240, },
+      dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0, },
       src_texture_sizes: [],
       src_regions: [],
     },
@@ -182,9 +182,9 @@ test "unused uniforms are zeroed while preserved prefix is kept" {
     unit: ShaderUnit::Pixels,
     noperspective: false,
     src_image_count: 1,
-    entrypoints: { vertex: "v", fragment: "f" },
+    entrypoints: { vertex: "v", fragment: "f", },
     debug_name: "x",
-    source_hash: { value: "1" },
+    source_hash: { value: "1", },
   }
   let packed = build_canonical_uniforms(
     canonicalizer,
@@ -194,12 +194,12 @@ test "unused uniforms are zeroed while preserved prefix is kept" {
       preserved_prefix_dwords: 2,
     },
     [
-      { name: "u_used", value: UniformValue::Int(7) },
-      { name: "u_unused", value: UniformValue::Ints([9, 10]) },
+      { name: "u_used", value: UniformValue::Int(7), },
+      { name: "u_unused", value: UniformValue::Ints([9, 10]), },
     ],
     {
-      dst_texture_size: { width: 320, height: 240 },
-      dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0 },
+      dst_texture_size: { width: 320, height: 240, },
+      dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0, },
       src_texture_sizes: [],
       src_regions: [],
     },
@@ -221,20 +221,24 @@ test "unused filter matches uniform names by identifier boundary" {
     unit: ShaderUnit::Pixels,
     noperspective: false,
     src_image_count: 1,
-    entrypoints: { vertex: "v", fragment: "f" },
+    entrypoints: { vertex: "v", fragment: "f", },
     debug_name: "x",
-    source_hash: { value: "1" },
+    source_hash: { value: "1", },
   }
   let packed = build_canonical_uniforms(
     canonicalizer,
-    { names: ["u_a", "u_ab"], dword_counts: [1, 1], preserved_prefix_dwords: 0 },
+    {
+      names: ["u_a", "u_ab"],
+      dword_counts: [1, 1],
+      preserved_prefix_dwords: 0,
+    },
     [
-      { name: "u_a", value: UniformValue::Int(1) },
-      { name: "u_ab", value: UniformValue::Int(2) },
+      { name: "u_a", value: UniformValue::Int(1), },
+      { name: "u_ab", value: UniformValue::Int(2), },
     ],
     {
-      dst_texture_size: { width: 1, height: 1 },
-      dst_region: { x: 0.0, y: 0.0, width: 1.0, height: 1.0 },
+      dst_texture_size: { width: 1, height: 1, },
+      dst_region: { x: 0.0, y: 0.0, width: 1.0, height: 1.0, },
       src_texture_sizes: [],
       src_regions: [],
     },
@@ -418,7 +422,7 @@ test "validate_shader_compile_request rejects empty source" {
     source: "",
     unit_hint: None,
     src_image_count: 0,
-    entrypoints: { vertex: "vs", fragment: "fs" },
+    entrypoints: { vertex: "vs", fragment: "fs", },
     debug_name: "empty",
   }
   match ShaderCompileRequest::validate(request) {
@@ -433,7 +437,7 @@ test "validate_shader_compile_request rejects empty vertex entrypoint" {
     source: "fn main() {}",
     unit_hint: None,
     src_image_count: 0,
-    entrypoints: { vertex: "", fragment: "fs" },
+    entrypoints: { vertex: "", fragment: "fs", },
     debug_name: "no_vs",
   }
   match ShaderCompileRequest::validate(request) {
@@ -448,7 +452,7 @@ test "validate_shader_compile_request rejects empty fragment entrypoint" {
     source: "fn main() {}",
     unit_hint: None,
     src_image_count: 0,
-    entrypoints: { vertex: "vs", fragment: "" },
+    entrypoints: { vertex: "vs", fragment: "", },
     debug_name: "no_fs",
   }
   match ShaderCompileRequest::validate(request) {
@@ -463,7 +467,7 @@ test "validate_shader_compile_request rejects negative src_image_count" {
     source: "fn main() {}",
     unit_hint: None,
     src_image_count: -1,
-    entrypoints: { vertex: "vs", fragment: "fs" },
+    entrypoints: { vertex: "vs", fragment: "fs", },
     debug_name: "neg",
   }
   match ShaderCompileRequest::validate(request) {
@@ -478,7 +482,7 @@ test "validate_shader_compile_request accepts valid request" {
     source: "fn main() { }",
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count: 1,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "valid",
   }
   match ShaderCompileRequest::validate(request) {
@@ -497,8 +501,8 @@ test "shader_unit_eq compares units" {
 
 ///|
 test "shader_hash_eq compares hash values" {
-  assert_true(ShaderSourceHash::eq({ value: "abc" }, { value: "abc" }))
-  assert_true(!ShaderSourceHash::eq({ value: "abc" }, { value: "def" }))
+  assert_true(ShaderSourceHash::eq({ value: "abc", }, { value: "abc", }))
+  assert_true(!ShaderSourceHash::eq({ value: "abc", }, { value: "def", }))
 }
 
 ///|
@@ -570,20 +574,20 @@ test "validate_uniform_layout accepts valid layout" {
 test "compute_expected_preserved_dwords matches context" {
   // dst_size(2) + dst_region(4) + 0 src = 6
   let ctx0 : PreservedUniformContext = {
-    dst_texture_size: { width: 320, height: 240 },
-    dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0 },
+    dst_texture_size: { width: 320, height: 240, },
+    dst_region: { x: 0.0, y: 0.0, width: 320.0, height: 240.0, },
     src_texture_sizes: [],
     src_regions: [],
   }
   assert_eq(PreservedUniformContext::expected_dwords(ctx0), 6)
   // dst(6) + 2 src * 6 = 18
   let ctx2 : PreservedUniformContext = {
-    dst_texture_size: { width: 64, height: 64 },
-    dst_region: { x: 0.0, y: 0.0, width: 64.0, height: 64.0 },
-    src_texture_sizes: [{ width: 32, height: 32 }, { width: 16, height: 16 }],
+    dst_texture_size: { width: 64, height: 64, },
+    dst_region: { x: 0.0, y: 0.0, width: 64.0, height: 64.0, },
+    src_texture_sizes: [{ width: 32, height: 32, }, { width: 16, height: 16, }],
     src_regions: [
-      { x: 0.0, y: 0.0, width: 32.0, height: 32.0 },
-      { x: 0.0, y: 0.0, width: 16.0, height: 16.0 },
+      { x: 0.0, y: 0.0, width: 32.0, height: 32.0, },
+      { x: 0.0, y: 0.0, width: 16.0, height: 16.0, },
     ],
   }
   assert_eq(PreservedUniformContext::expected_dwords(ctx2), 18)
@@ -592,9 +596,9 @@ test "compute_expected_preserved_dwords matches context" {
 ///|
 test "validate_preserved_uniform_context rejects mismatched src arrays" {
   let ctx : PreservedUniformContext = {
-    dst_texture_size: { width: 64, height: 64 },
-    dst_region: { x: 0.0, y: 0.0, width: 64.0, height: 64.0 },
-    src_texture_sizes: [{ width: 32, height: 32 }],
+    dst_texture_size: { width: 64, height: 64, },
+    dst_region: { x: 0.0, y: 0.0, width: 64.0, height: 64.0, },
+    src_texture_sizes: [{ width: 32, height: 32, }],
     src_regions: [],
   }
   match PreservedUniformContext::validate(ctx) {
@@ -606,8 +610,8 @@ test "validate_preserved_uniform_context rejects mismatched src arrays" {
 ///|
 test "validate_preserved_uniform_context rejects zero dst size" {
   let ctx : PreservedUniformContext = {
-    dst_texture_size: { width: 0, height: 64 },
-    dst_region: { x: 0.0, y: 0.0, width: 64.0, height: 64.0 },
+    dst_texture_size: { width: 0, height: 64, },
+    dst_region: { x: 0.0, y: 0.0, width: 64.0, height: 64.0, },
     src_texture_sizes: [],
     src_regions: [],
   }
@@ -620,10 +624,10 @@ test "validate_preserved_uniform_context rejects zero dst size" {
 ///|
 test "validate_preserved_uniform_context accepts valid context" {
   let ctx : PreservedUniformContext = {
-    dst_texture_size: { width: 128, height: 128 },
-    dst_region: { x: 0.0, y: 0.0, width: 128.0, height: 128.0 },
-    src_texture_sizes: [{ width: 64, height: 64 }],
-    src_regions: [{ x: 0.0, y: 0.0, width: 64.0, height: 64.0 }],
+    dst_texture_size: { width: 128, height: 128, },
+    dst_region: { x: 0.0, y: 0.0, width: 128.0, height: 128.0, },
+    src_texture_sizes: [{ width: 64, height: 64, }],
+    src_regions: [{ x: 0.0, y: 0.0, width: 64.0, height: 64.0, }],
   }
   match PreservedUniformContext::validate(ctx) {
     Some(_) => panic()
@@ -917,14 +921,14 @@ test "noperspective directive parsed into ShaderIR" {
     source: "//kage:noperspective\n@fragment fn main() -> vec4f { return vec4f(1.0); }",
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "nopersp",
   }
   let request_without : ShaderCompileRequest = {
     source: "@fragment fn main() -> vec4f { return vec4f(1.0); }",
     unit_hint: Some(ShaderUnit::Pixels),
     src_image_count: 0,
-    entrypoints: { vertex: "vs_main", fragment: "fs_main" },
+    entrypoints: { vertex: "vs_main", fragment: "fs_main", },
     debug_name: "nopersp",
   }
   let ir_with = frontend.compile_ir(request_with)

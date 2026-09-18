@@ -211,7 +211,7 @@ pub fn sampler_spec(
   filter : BuiltinShaderFilter,
   address : BuiltinShaderAddress,
 ) -> SamplerSpec {
-  { filter, address_u: address, address_v: address }
+  { filter, address_u: address, address_v: address, }
 }
 
 ///|
@@ -425,12 +425,12 @@ pub fn ShaderSourceHash::eq(
 
 ///|
 pub fn new_basic_shader_frontend() -> BasicShaderFrontend {
-  BasicShaderFrontend::{  }
+  BasicShaderFrontend::{ }
 }
 
 ///|
 pub fn new_basic_uniform_canonicalizer() -> BasicUniformCanonicalizer {
-  BasicUniformCanonicalizer::{  }
+  BasicUniformCanonicalizer::{ }
 }
 
 ///|
@@ -473,7 +473,7 @@ pub fn BasicBuiltinShaderSourceRepo::clear_cache(
 pub fn BasicBuiltinShaderSourceRepo::cache_stats(
   self : BasicBuiltinShaderSourceRepo,
 ) -> BuiltinShaderCacheStats {
-  { hit_count: self.hit_count, miss_count: self.miss_count }
+  { hit_count: self.hit_count, miss_count: self.miss_count, }
 }
 
 ///|
@@ -993,7 +993,7 @@ pub impl UniformCanonicalizer for BasicUniformCanonicalizer with fn prepend_pres
   for value in uniforms.dwords {
     out.push(value)
   }
-  { dwords: out }
+  { dwords: out, }
 }
 
 ///|
@@ -1028,7 +1028,7 @@ pub impl UniformCanonicalizer for BasicUniformCanonicalizer with fn filter_unuse
     }
     cursor = cursor + dword_count
   }
-  { dwords: out }
+  { dwords: out, }
 }
 
 ///|
@@ -1384,7 +1384,7 @@ pub impl BuiltinShaderSourceRepo for BasicBuiltinShaderSourceRepo with fn shader
     }
     None => {
       let source = build_builtin_shader_source(key)
-      self.cache.push({ key, source, last_used_tick: self.tick })
+      self.cache.push({ key, source, last_used_tick: self.tick, })
       self.miss_count = self.miss_count + 1
       trim_builtin_shader_cache(self)
       source
@@ -1411,7 +1411,7 @@ pub impl BuiltinShaderSourceRepo for BasicBuiltinShaderSourceRepo with fn shader
     }
     None => {
       let source = build_builtin_shader_source_ex(key)
-      self.cache_ex.push({ key, source, last_used_tick: self.tick })
+      self.cache_ex.push({ key, source, last_used_tick: self.tick, })
       self.miss_count = self.miss_count + 1
       trim_builtin_shader_cache_ex(self)
       source
@@ -1472,7 +1472,7 @@ pub fn default_builtin_shader_source() -> String {
 
 ///|
 pub fn default_shader_entrypoints() -> ShaderEntrypoints {
-  { vertex: "vs_main", fragment: "fs_main" }
+  { vertex: "vs_main", fragment: "fs_main", }
 }
 
 ///|

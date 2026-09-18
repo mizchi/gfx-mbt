@@ -38,7 +38,7 @@ pub fn new_dst_region(
   height : Int,
   index_count : Int,
 ) -> DstRegion {
-  { x, y, width, height, index_count }
+  { x, y, width, height, index_count, }
 }
 
 ///|
@@ -75,7 +75,7 @@ pub impl Show for RenderPassDesc with fn output(self, logger) {
 
 ///|
 pub fn new_color(r : Double, g : Double, b : Double, a : Double) -> Color {
-  { r, g, b, a }
+  { r, g, b, a, }
 }
 
 ///|
@@ -84,7 +84,7 @@ pub fn new_render_pass_desc(
   clear_enabled : Bool,
   present? : Bool = true,
 ) -> RenderPassDesc {
-  { clear_color, clear_enabled, present }
+  { clear_color, clear_enabled, present, }
 }
 
 ///|
